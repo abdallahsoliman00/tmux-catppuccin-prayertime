@@ -42,6 +42,8 @@ def cache_paths(latitude: float, longitude: float) -> tuple[Path, Path]:
 
 
 def fetch_timings(day: date, latitude: float, longitude: float) -> dict:
+    # TODO: Give the user the option to modify the parameters on their own, referencing the documentation:
+    #       https://aladhan.com/prayer-times-api
     query = urlencode({"latitude": latitude, "longitude": longitude})
     url = f"{API_URL.format(date=day.strftime('%d-%m-%Y'))}?{query}"
     request = Request(url, headers={"User-Agent": "tmux-prayer-plugin/1.0"})

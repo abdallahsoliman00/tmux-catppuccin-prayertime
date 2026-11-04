@@ -1,51 +1,21 @@
 # tmux-prayer-plugin
 
-A small tmux plugin that adds the time remaining until the next prayer to a
-Catppuccin tmux status line. It retrieves the five daily prayer times from the
-[Aladhan Prayer Times API](https://aladhan.com/prayer-times-api), caches them
-for the location's current day, and refreshes the cache at local midnight.
-
-The status segment looks like `P Fajr 02:14` (the `P` is the segment icon;
-the time is hours and minutes remaining). Sunrise is not treated as a prayer.
-After Isha, the next Fajr countdown uses today's Fajr clock time as an estimate,
-because the plugin only requests that day's schedule.
+Adds a countdown to the next daily prayer to the [Catppuccin/tmux](https://github.com/catppuccin/tmux) status line. Prayer times come from the [Aladhan API](https://aladhan.com/prayer-times-api) and are cached locally. Sunrise is excluded; after Isha, tomorrow's Fajr uses today's time as an estimate.
 
 ## Requirements
 
-- tmux 3.2 or newer
-- Python 3.9 or newer (including `zoneinfo`)
+- tmux 3.2+
+- Python 3.9+
 - Catppuccin/tmux v2
-- Network access to `api.aladhan.com` when the daily cache is refreshed
-
-## Configuration
-
-Set decimal coordinates and add the component to the Catppuccin status line.
-Load this plugin after Catppuccin/tmux so its `@thm_mauve` theme color is
-available:
-
-```tmux
-set -g @prayer_latitude '40.7128'
-set -g @prayer_longitude '-74.0060'
-
-# Add after Catppuccin/tmux has been loaded:
-set -ag status-right '#{E:@catppuccin_status_prayer}'
-```
-
-The status option is named `@catppuccin_status_prayer`. The segment uses the
-Catppuccin mauve foreground and displays `P` followed by the next prayer name
-and remaining time. If coordinates are missing, invalid, or the cache is not
-ready yet, it displays `P --:--` (an invalid/missing location prevents the
-background updater from making requests).
+- Internet access to `api.aladhan.com` for the daily refresh
 
 ## Install with TPM
 
-Add the plugin after Catppuccin and before TPM's initialization in
-`~/.tmux.conf`:
+Add these lines to `~/.tmux.conf`, replacing the example coordinates with your location's decimal latitude and longitude:
 
 ```tmux
 set -g @plugin 'catppuccin/tmux#v2.3.0'
-set -g @plugin 'YOUR_GITHUB_USER/tmux-prayer-plugin'
-
+set -g @plugin 'abdallahsoliman00/tmux-prayer-plugin'
 set -g @prayer_latitude '40.7128'
 set -g @prayer_longitude '-74.0060'
 set -ag status-right '#{E:@catppuccin_status_prayer}'
@@ -53,24 +23,17 @@ set -ag status-right '#{E:@catppuccin_status_prayer}'
 run '~/.tmux/plugins/tpm/tpm'
 ```
 
-Replace `YOUR_GITHUB_USER` with the account that hosts this repository. Install
-the plugin with `prefix` + <kbd>I</kbd>, then reload tmux or restart the tmux
-server. If you already have a Catppuccin status line, append the prayer
-component wherever you want it to appear, for example:
+Reload tmux, then press your TPM install key (default: `prefix` + `I`). Keep the prayer plugin after Catppuccin and before TPM's `run` line. To combine it with other segments, include `#{E:@catppuccin_status_prayer}` in your existing `status-right` setting.
 
-```tmux
-set -g status-right "#{E:@catppuccin_status_directory} #{E:@catppuccin_status_prayer} #{E:@catppuccin_status_date_time}"
-```
+## Manual install
 
-## Manual installation
-
-Clone the repository and source its tmux entry point. Keep the coordinate
-options and status-line append after Catppuccin is configured:
+Clone the repository:
 
 ```sh
-git clone https://github.com/YOUR_GITHUB_USER/tmux-prayer-plugin.git \
-  ~/.tmux/plugins/tmux-prayer-plugin
+git clone https://github.com/abdallahsoliman00/tmux-prayer-plugin.git ~/.tmux/plugins/tmux-prayer-plugin
 ```
+
+After Catppuccin is configured, add the coordinate settings and source the plugin in `~/.tmux.conf`:
 
 ```tmux
 set -g @prayer_latitude '40.7128'
@@ -79,6 +42,4 @@ run '~/.tmux/plugins/tmux-prayer-plugin/prayer.tmux'
 set -ag status-right '#{E:@catppuccin_status_prayer}'
 ```
 
-Reload the tmux configuration or restart the tmux server to start the updater.
-The plugin uses Python's standard library and stores location-specific cache
-files under `${XDG_CACHE_HOME:-~/.cache}/tmux-prayer-plugin/`.
+Reload tmux. The segment displays `--:--` until its first successful refresh. The plugin uses Python's standard library and stores its cache in `${XDG_CACHE_HOME:-~/.cache}/tmux-prayer-plugin/`.
