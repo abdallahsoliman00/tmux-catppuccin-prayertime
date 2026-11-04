@@ -134,7 +134,10 @@ def run_daemon(path: Path, lock_path: Path, latitude: float, longitude: float) -
                 cache = update_for_today(path, latitude, longitude)
                 now = datetime.now(ZoneInfo(cache["timezone"]))
                 seconds = (next_midnight(now) - now).total_seconds()
-                time.sleep(max(1, seconds))
+                # Recheck periodically rather than sleeping uninterrupted
+                # until midnight. This also recovers if the system clock or
+                # location timezone changes while the updater is asleep.
+                time.sleep(max(1, min(seconds, 60)))
             except (URLError, TimeoutError, OSError, RuntimeError, ValueError) as error:
                 print(f"tmux-prayer-plugin: refresh failed: {error}", file=sys.stderr, flush=True)
                 # Retry transient failures without polling the API continuously.
@@ -172,20 +175,27 @@ def status(path: Path, latitude: float, longitude: float) -> str:
 
 
 def main(arguments: list[str]) -> int:
-    if len(arguments) != 4 or arguments[1] not in {"status", "daemon"}:
-        print("usage: prayer.py (status|daemon) LATITUDE LONGITUDE", file=sys.stderr)
+    if len(arguments) != 4 or arguments[1] not in {"status", "daemon", "refresh"}:
+        print("usage: prayer.py (status|daemon|refresh) LATITUDE LONGITUDE", file=sys.stderr)
         return 2
     command, latitude_arg, longitude_arg = arguments[1:]
     try:
         latitude, longitude = parse_coordinates(latitude_arg, longitude_arg)
     except ValueError as error:
-        if command == "daemon":
+        if command != "status":
             print(f"tmux-prayer-plugin: {error}", file=sys.stderr)
         return 0 if command == "status" else 2
 
     path, lock_path = cache_paths(latitude, longitude)
     if command == "status":
         print(status(path, latitude, longitude))
+    elif command == "refresh":
+        try:
+            cache = update_for_today(path, latitude, longitude)
+            print(f"Cached prayer times for {cache['date']} ({cache['timezone']})")
+        except (URLError, TimeoutError, OSError, RuntimeError, ValueError) as error:
+            print(f"tmux-prayer-plugin: refresh failed: {error}", file=sys.stderr)
+            return 1
     else:
         run_daemon(path, lock_path, latitude, longitude)
     return 0
