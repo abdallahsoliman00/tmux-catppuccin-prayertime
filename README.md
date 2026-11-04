@@ -1,4 +1,6 @@
-# tmux-prayer-plugin
+# tmux-catppuccin-prayertime
+
+![image](./assets/demo.png)
 
 Adds a countdown to the next daily prayer to the [Catppuccin/tmux](https://github.com/catppuccin/tmux) status line. Prayer times come from the [Aladhan API](https://aladhan.com/prayer-times-api) and are cached locally. Sunrise is excluded; after Isha, tomorrow's Fajr uses today's time as an estimate.
 
@@ -15,7 +17,7 @@ Add these lines to `~/.tmux.conf`, replacing the example coordinates with your l
 
 ```tmux
 set -g @plugin 'catppuccin/tmux#v2.3.0'
-set -g @plugin 'abdallahsoliman00/tmux-prayer-plugin'
+set -g @plugin 'abdallahsoliman00/tmux-catppuccin-prayertime'
 set -g @prayer_latitude '40.7128'
 set -g @prayer_longitude '-74.0060'
 set -ag status-right '#{E:@catppuccin_status_prayer}'
@@ -30,7 +32,7 @@ Reload tmux, then press your TPM install key (default: `prefix` + `I`). Keep the
 Clone the repository:
 
 ```sh
-git clone https://github.com/abdallahsoliman00/tmux-prayer-plugin.git ~/.tmux/plugins/tmux-prayer-plugin
+git clone https://github.com/abdallahsoliman00/tmux-catppuccin-prayertime.git ~/.tmux/plugins/tmux-catppuccin-prayertime
 ```
 
 After Catppuccin is configured, add the coordinate settings and source the plugin in `~/.tmux.conf`:
@@ -38,8 +40,8 @@ After Catppuccin is configured, add the coordinate settings and source the plugi
 ```tmux
 set -g @prayer_latitude '40.7128'
 set -g @prayer_longitude '-74.0060'
-run '~/.tmux/plugins/tmux-prayer-plugin/prayer.tmux'
+run '~/.tmux/plugins/tmux-catppuccin-prayertime/prayer.tmux'
 set -ag status-right '#{E:@catppuccin_status_prayer}'
 ```
 
-Reload tmux. The segment displays `--:--` until its first successful refresh. The plugin uses Python's standard library and stores its cache in `${XDG_CACHE_HOME:-~/.cache}/tmux-prayer-plugin/`.
+Reload tmux. The segment displays `--:--` until its first successful refresh. The plugin uses Python's standard library and stores its cache in `${XDG_CACHE_HOME:-~/.cache}/tmux-catppuccin-prayertime/`.
