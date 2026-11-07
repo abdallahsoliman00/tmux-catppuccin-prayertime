@@ -62,17 +62,16 @@ set -g @prayer_school '1'   # Hanafi
 | Option | Values | Description |
 | --- | --- | --- |
 | `@prayer_method` | `0`–`23`, `99` | Calculation method, such as `2` ISNA, `3` Muslim World League, `4` Umm Al-Qura or `5` Egyptian. See [the full list](https://aladhan.com/calculation-methods). |
-| `@prayer_methodSettings` | e.g. `18.5,null,17.5` | Custom Fajr angle, Maghrib angle or minutes, and Isha angle or minutes. Requires `@prayer_method '99'`. |
-| `@prayer_school` | `0` Shafi (default), `1` Hanafi | Asr juristic school. |
 | `@prayer_shafaq` | `general`, `ahmer`, `abyad` | Shafaq type. Only used with method `15` (Moonsighting Committee). |
-| `@prayer_latitudeAdjustmentMethod` | `1` middle of the night, `2` one seventh, `3` angle based | Adjustment for high latitudes, such as the UK or Scandinavia. |
 | `@prayer_tune` | e.g. `0,2,0,0,0,0,0,-1,0` | Minute offsets applied to Imsak, Fajr, Sunrise, Dhuhr, Asr, Maghrib, Sunset, Isha and Midnight, in that order. Use this to match your local mosque. |
+| `@prayer_school` | `0` Shafi (default), `1` Hanafi | Asr juristic school. |
 | `@prayer_midnightMode` | `0` standard, `1` Jafari | How midnight is calculated. |
 | `@prayer_timezonestring` | e.g. `Europe/London` | Overrides the timezone that Aladhan derives from your coordinates. |
+| `@prayer_latitudeAdjustmentMethod` | `1` middle of the night, `2` one seventh, `3` angle based | Adjustment for high latitudes, such as the UK or Scandinavia. |
 | `@prayer_calendarMethod` | `HJCoSA`, `UAQ`, `DIYANET`, `MATHEMATICAL` | Hijri calendar method. |
 | `@prayer_adjustment` | integer, e.g. `-1` | Hijri date adjustment in days. Only used with `MATHEMATICAL`. |
 
-Leave an option unset, or set it to an empty string, to use the API default.
+Leave an option unset, or set it to an empty string, to use the API default. `iso8601` isn't supported because the plugin expects plain `HH:MM` times.
 
 Changes take effect within a minute, with no restart needed: the updater re-reads the `@prayer_*` options on every check and refetches whenever they differ from the cached times. Aladhan quietly falls back to its defaults when it gets an invalid value, so the plugin checks values itself and refuses to fetch with a bad one. To apply your settings straight away and see any errors, run:
 
